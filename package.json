@@ -4,7 +4,7 @@
   "description": "Backend API for FreelanceConfía - Latin American freelancer platform",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
+    "start": "npm run build && node app.js",
     "dev": "nodemon app.js",
     "build": "cd FreelanceConfía/confia-talento-latam-main && npm install && npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
