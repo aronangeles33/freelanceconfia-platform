@@ -19,13 +19,19 @@ const dotenv = require('dotenv');
 const stripe = require('stripe');
 const rateLimit = require('express-rate-limit');
 
-dotenv.config();
+// Configuración de variables de entorno
+// En desarrollo: usar .env file
+// En producción: usar variables de entorno nativas de Render
+if (process.env.NODE_ENV !== 'production') {
+  dotenv.config();
+}
 
 // Debug: Mostrar variables de entorno (sin mostrar valores sensibles completos)
 console.log('🔍 Environment Variables Debug:');
 console.log('NODE_ENV:', process.env.NODE_ENV);
 console.log('PORT:', process.env.PORT);
 console.log('MONGODB_URI exists:', !!process.env.MONGODB_URI);
+console.log('MONGODB_URI length:', process.env.MONGODB_URI ? process.env.MONGODB_URI.length : 0);
 console.log('JWT_SECRET exists:', !!process.env.JWT_SECRET);
 console.log('STRIPE_SECRET_KEY exists:', !!process.env.STRIPE_SECRET_KEY);
 console.log('FRONTEND_URL:', process.env.FRONTEND_URL);
@@ -37,19 +43,25 @@ if (!process.env.MONGODB_URI) {
   Object.keys(process.env).filter(key => key.startsWith('MONGO')).forEach(key => {
     console.error(`  ${key}: ${!!process.env[key]}`);
   });
+} else {
+  console.log('✅ MONGODB_URI is available');
 }
 
 // Validar variables de entorno requeridas
 const requiredEnvVars = ['MONGODB_URI', 'JWT_SECRET', 'STRIPE_SECRET_KEY'];
-const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+const missingVars = requiredEnvVars.filter(varName => {
+  const value = process.env[varName];
+  return !value || value.trim() === '';
+});
 
 if (missingVars.length > 0) {
-  console.error('❌ Missing required environment variables:', missingVars.join(', '));
+  console.error('❌ Missing or empty required environment variables:', missingVars.join(', '));
   console.error('Please check your environment configuration.');
+  console.error('All env variables:', Object.keys(process.env).sort());
   process.exit(1);
 }
 
-console.log('✅ All required environment variables are set');
+console.log('✅ All required environment variables are set and non-empty');
 console.log('Environment:', process.env.NODE_ENV || 'development');
 
 const app = express();
