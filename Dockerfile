@@ -7,8 +7,8 @@ WORKDIR /app
 # Copia package.json y package-lock.json
 COPY package*.json ./
 
-# Instala dependencias
-RUN npm ci --only=production
+# Instala TODAS las dependencias (incluyendo devDependencies como Vite)
+RUN npm ci
 
 # Copia el código fuente
 COPY . .
