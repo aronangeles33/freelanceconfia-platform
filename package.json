@@ -1,0 +1,44 @@
+{
+  "name": "freelanceconfia-backend",
+  "version": "1.0.0",
+  "description": "Backend API for FreelanceConfía - Latin American freelancer platform",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "freelance",
+    "api",
+    "nodejs",
+    "express",
+    "mongodb",
+    "jwt",
+    "stripe",
+    "socket.io"
+  ],
+  "author": "FreelanceConfía Team",
+  "license": "MIT",
+  "dependencies": {
+    "@stripe/react-stripe-js": "^4.0.2",
+    "@stripe/stripe-js": "^7.9.0",
+    "axios": "^1.12.2",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^6.10.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.19.0",
+    "mongoose": "^7.5.0",
+    "socket.io": "^4.7.2",
+    "stripe": "^13.6.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

@@ -1,0 +1,134 @@
+Paso a Paso para Configurar y Conectar el Backend de FreelanceConfía - 16 de septiembre de 2025
+
+1. Configurar el Proyecto Backend:
+   - Crea un directorio: `mkdir freelanceconfia-backend && cd freelanceconfia-backend`.
+   - Inicializa Node.js: `npm init -y`.
+   - Instala dependencias: `npm install express mongoose bcryptjs jsonwebtoken socket.io cors dotenv stripe express-rate-limit`.
+   - Crea archivo `app.js` y pega el código generado con Copilot (usando el prompt anterior).
+   - Crea archivo `.gitignore` con: `node_modules`, `.env`.
+
+2. Configurar Credenciales en .env:
+   - Crea un archivo `.env` en la raíz del proyecto con:
+MONGO_URI=mongodb+srv://tu-usuario:tu-password@cluster.mongodb.net/freelanceconfia?retryWrites=true&w=majority
+JWT_SECRET=una-clave-secreta-larga-random
+STRIPE_SECRET_KEY=sk_test_tu-key-de-stripe
+FRONTEND_URL=http://localhost:3000
+PORT=5000
+
+   - Obtén MONGO_URI:
+     * Regístrate en MongoDB Atlas (cloud.mongodb.com).
+     * Crea un cluster gratuito, selecciona "Shared".
+     * Agrega tu IP a Network Access (o usa 0.0.0.0/0 para pruebas).
+     * Crea un usuario de base de datos (guarda usuario/contraseña).
+     * Copia la URI desde "Connect > Connect your application" y reemplaza usuario/contraseña.
+   
+   - Genera JWT_SECRET: En terminal, usa `openssl rand -hex 32`.
+   
+   - Obtén STRIPE_SECRET_KEY:
+     * Regístrate en stripe.com.
+     * Ve a Dashboard > Developers > API Keys.
+     * Copia la secret key de test (empieza con `sk_test_`).
+   
+   - FRONTEND_URL: Usa `http://localhost:3000` para pruebas locales; actualiza a la URL del frontend desplegado más tarde.
+   
+   - **Importante**: Nunca subas .env a GitHub. Verifica que esté en .gitignore.
+
+3. Probar el Backend Localmente:
+   - Corre: `node app.js`.
+   - Verifica que conecte a MongoDB (verás "MongoDB connected" en consola).
+   - Usa Postman o cURL para probar endpoints:
+     * POST http://localhost:5000/api/register con `{ "email": "test@freelance.com", "password": "123456", "name": "Test User", "role": "freelancer" }`.
+     * POST http://localhost:5000/api/login con `{ "email": "test@freelance.com", "password": "123456" }`.
+   - Si hay errores, revisa consola y corrige (puedes pedir a Copilot: "// Debug: Fix MongoDB connection error").
+
+4. Desplegar el Backend:
+   - Usa Render.com (gratis para starters):
+     * Crea cuenta en render.com.
+     * Crea un nuevo "Web Service", conecta tu repo de GitHub.
+     * Configura: Node.js environment, comando `node app.js`.
+     * En Settings > Environment Variables, agrega MONGO_URI, JWT_SECRET, STRIPE_SECRET_KEY, FRONTEND_URL (URL del frontend desplegado), PORT=5000.
+     * Obtén la URL del backend, e.g., https://freelanceconfia-backend.onrender.com.
+     * Prueba endpoints desplegados con Postman.
+
+5. Conectar Frontend (Lovable) con Backend:
+   - En Lovable.dev, ve a Settings > Environment Variables.
+   - Agrega:
+API_URL=https://freelanceconfia-backend.onrender.com/api
+STRIPE_PUBLIC_KEY=pk_test_tu-key-de-stripe
+
+   - Obtén STRIPE_PUBLIC_KEY de Stripe Dashboard (empieza con `pk_test_`).
+   - En el código del frontend (generado por Lovable), verifica que las llamadas API usen `process.env.API_URL`, e.g., `fetch(${process.env.API_URL}/projects)`.
+   
+   - Para autenticación:
+     * Al login, guarda el JWT devuelto por /api/login en localStorage.
+     * Incluye el token en headers: `Authorization: Bearer <token>`.
+   
+   - Para chat:
+     * Integra Socket.io client en Lovable (agrega `<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>` si necesario).
+     * Configura: `const socket = io(process.env.API_URL); socket.emit('join', userId);`.
+   
+   - Prueba end-to-end: Registra un usuario, crea un proyecto, postúlate, envía un mensaje, simula un pago.
+
+6. Seguridad y Mantenimiento:
+   - Nunca compartas .env o credenciales.
+   - Si pierdes keys, genera nuevas en MongoDB Atlas o Stripe.
+   - Para producción: Cambia STRIPE_SECRET_KEY y STRIPE_PUBLIC_KEY a live keys, fuerza HTTPS en Render.
+   - Agrega logging: Usa `winston` para registrar errores (`npm install winston`).
+
+7. Deployment Final:
+   - Exporta frontend de Lovable a Vercel/Netlify:
+     * Conecta el repo de GitHub generado por Lovable.
+     * Agrega API_URL y STRIPE_PUBLIC_KEY en variables de entorno.
+     * Verifica que el frontend apunta al backend desplegado.
+   - Monitorea con Google Analytics (en frontend) y logs en backend.
+
+8. API Endpoints Disponibles:
+   Autenticación:
+   - POST /api/register - Registrar usuario (freelancer o company)
+   - POST /api/login - Iniciar sesión
+
+   Usuarios:
+   - GET /api/users/:id - Obtener perfil de usuario
+   - PUT /api/users/:id - Actualizar perfil
+
+   Proyectos:
+   - GET /api/projects - Listar todos los proyectos abiertos
+   - GET /api/projects/featured - Proyectos destacados (mayor presupuesto)
+   - POST /api/projects - Crear nuevo proyecto (solo companies)
+   - GET /api/projects/:id - Detalle de proyecto específico
+
+   Postulaciones:
+   - POST /api/applications - Postularse a un proyecto (solo freelancers)
+   - GET /api/applications/project/:projectId - Ver postulaciones de un proyecto
+   - PATCH /api/applications/:id - Aceptar/rechazar postulación
+
+   Reputación y Matching:
+   - GET /api/reputation/:type/:id - Calcular score de reputación
+   - GET /api/matching/:freelancerId - Recomendar proyectos para freelancer
+
+   Mensajería:
+   - GET /api/messages/:userId - Obtener conversaciones del usuario
+   - Socket.io events: 'join', 'sendMessage', 'newMessage'
+
+   Pagos:
+   - POST /api/payments/create - Crear payment intent (escrow)
+   - POST /api/payments/confirm - Confirmar pago tras completar proyecto
+
+   Utilidad:
+   - GET /api/health - Estado del servidor
+
+9. Modelos de Datos:
+   User: email, password, name, role, skills, location, portfolio, reputationScore
+   Project: title, description, budget, category, location, client, status
+   Application: project, freelancer, proposal, status
+   Message: sender, receiver, content, timestamp
+   Payment: project, amount, status, stripeId
+
+10. Comandos Útiles:
+    - Instalar dependencias: `npm install`
+    - Ejecutar en desarrollo: `npm run dev` (requiere nodemon)
+    - Ejecutar en producción: `npm start`
+    - Generar JWT secret: `openssl rand -hex 32`
+    - Ver logs: Revisa la consola del servidor o logs de Render
+
+Si algo falla, revisa errores en consola del navegador (frontend) y terminal/logs del servidor (backend). Los errores más comunes son: credenciales incorrectas en .env, CORS mal configurado, o tokens JWT expirados.

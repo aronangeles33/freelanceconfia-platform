@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧹 Limpiar Cache - FreelanceConfía</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        h1 { color: #fff; text-align: center; margin-bottom: 30px; }
+        h2 { color: #f0f8ff; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 10px; }
+        .step {
+            background: rgba(255,255,255,0.15);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 10px;
+            border-left: 4px solid #4ade80;
+        }
+        .warning {
+            background: rgba(255,193,7,0.2);
+            border-left-color: #fbbf24;
+        }
+        .success {
+            background: rgba(34,197,94,0.2);
+            border-left-color: #10b981;
+        }
+        .button {
+            background: #4ade80;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+            transition: all 0.3s;
+        }
+        .button:hover {
+            background: #22c55e;
+            transform: translateY(-2px);
+        }
+        .button.danger {
+            background: #ef4444;
+        }
+        .button.danger:hover {
+            background: #dc2626;
+        }
+        kbd {
+            background: rgba(0,0,0,0.3);
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .status.success { background: rgba(34,197,94,0.3); }
+        .status.error { background: rgba(239,68,68,0.3); }
+        .status.info { background: rgba(59,130,246,0.3); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧹 Limpieza de Cache - FreelanceConfía</h1>
+        
+        <div id="status" class="status info">
+            🔍 Verificando estado del navegador...
+        </div>
+
+        <h2>📋 Instrucciones Paso a Paso</h2>
+        
+        <div class="step">
+            <strong>Paso 1:</strong> Presiona <kbd>F12</kbd> para abrir Developer Tools
+        </div>
+        
+        <div class="step warning">
+            <strong>Paso 2:</strong> Haz clic derecho en el botón de refresh ↻ y selecciona:<br>
+            • <strong>"Empty Cache and Hard Reload"</strong> (Chrome)<br>
+            • <strong>"Reload Ignoring Cache"</strong> (Firefox)<br>
+            • O presiona <kbd>Ctrl + Shift + R</kbd>
+        </div>
+        
+        <div class="step">
+            <strong>Paso 3:</strong> Ve a la pestaña <strong>"Application"</strong> en Developer Tools
+        </div>
+        
+        <div class="step">
+            <strong>Paso 4:</strong> En el panel izquierdo busca <strong>"Storage"</strong> → <strong>"Clear storage"</strong><br>
+            Marca todas las casillas y haz clic en <strong>"Clear site data"</strong>
+        </div>
+        
+        <div class="step success">
+            <strong>Paso 5:</strong> Busca <strong>"Service Workers"</strong> en el panel izquierdo<br>
+            Si ves algún Service Worker, haz clic en <strong>"Unregister"</strong>
+        </div>
+
+        <h2>🚀 Limpieza Automática</h2>
+        
+        <button class="button" onclick="clearAllCaches()">
+            🧹 Limpiar Todo Automáticamente
+        </button>
+        
+        <button class="button danger" onclick="unregisterServiceWorkers()">
+            🛑 Desregistrar Service Workers
+        </button>
+        
+        <button class="button" onclick="goToApp()">
+            ✅ Ir a FreelanceConfía Limpio
+        </button>
+
+        <h2>📊 Estado Actual</h2>
+        
+        <div id="cacheInfo">
+            <p>🔄 Verificando caches...</p>
+        </div>
+        
+        <div id="swInfo">
+            <p>🔄 Verificando Service Workers...</p>
+        </div>
+
+        <h2>❓ ¿Sigues viendo errores?</h2>
+        
+        <div class="step warning">
+            <strong>Método de Último Recurso:</strong><br>
+            1. Cierra completamente tu navegador<br>
+            2. Abre modo incógnito/privado<br>
+            3. Ve a <code>http://localhost:8080</code><br>
+            4. Los errores deberían haber desaparecido
+        </div>
+    </div>
+
+    <script>
+        let statusDiv = document.getElementById('status');
+        let cacheInfo = document.getElementById('cacheInfo');
+        let swInfo = document.getElementById('swInfo');
+
+        async function clearAllCaches() {
+            statusDiv.className = 'status info';
+            statusDiv.innerHTML = '🧹 Limpiando caches...';
+            
+            try {
+                if ('caches' in window) {
+                    const cacheNames = await caches.keys();
+                    await Promise.all(
+                        cacheNames.map(cacheName => {
+                            console.log('🗑️ Eliminando cache:', cacheName);
+                            return caches.delete(cacheName);
+                        })
+                    );
+                    statusDiv.className = 'status success';
+                    statusDiv.innerHTML = '✅ Todos los caches eliminados correctamente';
+                } else {
+                    statusDiv.className = 'status error';
+                    statusDiv.innerHTML = '❌ Cache API no disponible';
+                }
+                updateCacheInfo();
+            } catch (error) {
+                statusDiv.className = 'status error';
+                statusDiv.innerHTML = '❌ Error al limpiar caches: ' + error.message;
+            }
+        }
+
+        async function unregisterServiceWorkers() {
+            statusDiv.className = 'status info';
+            statusDiv.innerHTML = '🛑 Desregistrando Service Workers...';
+            
+            try {
+                if ('serviceWorker' in navigator) {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    for (let registration of registrations) {
+                        await registration.unregister();
+                        console.log('🛑 Service Worker desregistrado');
+                    }
+                    statusDiv.className = 'status success';
+                    statusDiv.innerHTML = '✅ Todos los Service Workers desregistrados';
+                } else {
+                    statusDiv.className = 'status error';
+                    statusDiv.innerHTML = '❌ Service Workers no disponibles';
+                }
+                updateSWInfo();
+            } catch (error) {
+                statusDiv.className = 'status error';
+                statusDiv.innerHTML = '❌ Error al desregistrar SW: ' + error.message;
+            }
+        }
+
+        function goToApp() {
+            statusDiv.className = 'status info';
+            statusDiv.innerHTML = '🚀 Redirigiendo a FreelanceConfía...';
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 1000);
+        }
+
+        async function updateCacheInfo() {
+            try {
+                if ('caches' in window) {
+                    const cacheNames = await caches.keys();
+                    if (cacheNames.length === 0) {
+                        cacheInfo.innerHTML = '<p style="color: #4ade80;">✅ No hay caches almacenados</p>';
+                    } else {
+                        cacheInfo.innerHTML = '<p style="color: #fbbf24;">⚠️ Caches encontrados:</p><ul>' + 
+                            cacheNames.map(name => `<li>${name}</li>`).join('') + '</ul>';
+                    }
+                } else {
+                    cacheInfo.innerHTML = '<p style="color: #ef4444;">❌ Cache API no disponible</p>';
+                }
+            } catch (error) {
+                cacheInfo.innerHTML = '<p style="color: #ef4444;">❌ Error: ' + error.message + '</p>';
+            }
+        }
+
+        async function updateSWInfo() {
+            try {
+                if ('serviceWorker' in navigator) {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    if (registrations.length === 0) {
+                        swInfo.innerHTML = '<p style="color: #4ade80;">✅ No hay Service Workers registrados</p>';
+                    } else {
+                        swInfo.innerHTML = '<p style="color: #fbbf24;">⚠️ Service Workers activos:</p><ul>' + 
+                            registrations.map((reg, i) => `<li>SW ${i + 1}: ${reg.scope}</li>`).join('') + '</ul>';
+                    }
+                } else {
+                    swInfo.innerHTML = '<p style="color: #ef4444;">❌ Service Workers no disponibles</p>';
+                }
+            } catch (error) {
+                swInfo.innerHTML = '<p style="color: #ef4444;">❌ Error: ' + error.message + '</p>';
+            }
+        }
+
+        // Verificar estado al cargar
+        window.onload = async () => {
+            await updateCacheInfo();
+            await updateSWInfo();
+            
+            statusDiv.className = 'status success';
+            statusDiv.innerHTML = '✅ Sistema listo para limpieza';
+        };
+    </script>
+</body>
+</html>

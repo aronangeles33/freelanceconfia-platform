@@ -1,0 +1,7 @@
+<!-- SVG icon placeholder 144x144 -->
+<svg width="144" height="144" viewBox="0 0 144 144" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="144" height="144" rx="20" fill="#3B82F6"/>
+  <path d="M72 36C54 36 39 51 39 69C39 87 54 102 72 102C90 102 105 87 105 69C105 51 90 36 72 36ZM72 96C57.3 96 45 83.7 45 69C45 54.3 57.3 42 72 42C86.7 42 99 54.3 99 69C99 83.7 86.7 96 72 96Z" fill="white"/>
+  <path d="M72 57C68.7 57 66 59.7 66 63V75C66 78.3 68.7 81 72 81C75.3 81 78 78.3 78 75V63C78 59.7 75.3 57 72 57Z" fill="white"/>
+  <circle cx="72" cy="87" r="3" fill="white"/>
+</svg>

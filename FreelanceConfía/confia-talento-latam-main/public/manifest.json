@@ -1,0 +1,151 @@
+{
+  "name": "FreelanceConfía - Plataforma de Freelancers en América Latina",
+  "short_name": "FreelanceConfía",
+  "description": "La plataforma más confiable para conectar freelancers y clientes en América Latina",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "es",
+  "dir": "ltr",
+  "categories": ["business", "productivity", "social"],
+  "screenshots": [
+    {
+      "src": "/placeholder.svg",
+      "sizes": "320x640",
+      "type": "image/svg+xml",
+      "form_factor": "narrow",
+      "label": "Vista principal en móvil"
+    },
+    {
+      "src": "/placeholder.svg", 
+      "sizes": "320x640",
+      "type": "image/svg+xml",
+      "form_factor": "narrow",
+      "label": "Búsqueda de proyectos en móvil"
+    },
+    {
+      "src": "/placeholder.svg",
+      "sizes": "1280x720",
+      "type": "image/svg+xml",
+      "form_factor": "wide",
+      "label": "Dashboard en escritorio"
+    }
+  ],
+  "icons": [
+    {
+      "src": "/icon-192x192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512x512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "16x16 32x32 48x48",
+      "type": "image/x-icon",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Buscar Proyectos",
+      "short_name": "Buscar",
+      "description": "Buscar nuevos proyectos disponibles",
+      "url": "/search?type=projects",
+      "icons": [
+        {
+          "src": "/icon-96x96.svg",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Crear Proyecto",
+      "short_name": "Crear",
+      "description": "Publicar un nuevo proyecto",
+      "url": "/create-project",
+      "icons": [
+        {
+          "src": "/icon-96x96.svg",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Mi Dashboard",
+      "short_name": "Dashboard",
+      "description": "Ver mi panel de control",
+      "url": "/dashboard",
+      "icons": [
+        {
+          "src": "/icon-96x96.svg",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Chat",
+      "short_name": "Chat",
+      "description": "Ver mensajes y conversaciones",
+      "url": "/dashboard?tab=messages",
+      "icons": [
+        {
+          "src": "/icon-96x96.svg",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "files",
+          "accept": ["image/*", ".pdf", ".doc", ".docx"]
+        }
+      ]
+    }
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "mailto",
+      "url": "/contact?email=%s"
+    }
+  ],
+  "prefer_related_applications": false,
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=com.freelanceconfia.app",
+      "id": "com.freelanceconfia.app"
+    },
+    {
+      "platform": "itunes",
+      "url": "https://apps.apple.com/app/freelanceconfia/id123456789"
+    }
+  ],
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": ["focus-existing", "auto"]
+  }
+}
