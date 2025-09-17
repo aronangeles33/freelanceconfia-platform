@@ -4,14 +4,21 @@ FROM node:18-alpine
 # Establece directorio de trabajo
 WORKDIR /app
 
-# Copia package.json y package-lock.json
+# Copia package.json y package-lock.json del backend
 COPY package*.json ./
 
-# Instala TODAS las dependencias (incluyendo devDependencies como Vite)
+# Instala dependencias del backend
 RUN npm ci
 
 # Copia el código fuente
 COPY . .
+
+# Instala dependencias del frontend e inicia el build
+WORKDIR /app/FreelanceConfía/confia-talento-latam-main
+RUN npm ci && npm run build
+
+# Vuelve al directorio principal
+WORKDIR /app
 
 # Expone el puerto
 EXPOSE 5000
@@ -20,5 +27,5 @@ EXPOSE 5000
 ENV NODE_ENV=production
 ENV PORT=5000
 
-# Comando para ejecutar la aplicación
-CMD ["npm", "start"]
+# Comando para ejecutar la aplicación (sin build, ya está hecho)
+CMD ["node", "app.js"]
