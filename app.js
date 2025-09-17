@@ -863,8 +863,20 @@ app.get('/api/health', (req, res) => {
 // Servir el frontend para todas las rutas que no sean API
 app.get('*', (req, res) => {
   const indexPath = path.join(__dirname, 'FreelanceConfía', 'confia-talento-latam-main', 'dist', 'index.html');
-  console.log('Serving index.html from:', indexPath);
-  res.sendFile(indexPath);
+  console.log('Attempting to serve index.html from:', indexPath);
+  
+  // Verificar si el archivo existe
+  if (fs.existsSync(indexPath)) {
+    console.log('✅ index.html found, serving file');
+    res.sendFile(indexPath);
+  } else {
+    console.log('❌ index.html not found, frontend build may not be complete');
+    res.status(503).json({ 
+      error: 'Frontend not ready', 
+      message: 'Frontend build in progress or failed',
+      timestamp: new Date().toISOString()
+    });
+  }
 });
 
 // Paso 13: Iniciar servidor
