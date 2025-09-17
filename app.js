@@ -20,7 +20,25 @@ const stripe = require('stripe');
 const rateLimit = require('express-rate-limit');
 
 dotenv.config();
+
+// Validar variables de entorno requeridas
+const requiredEnvVars = ['MONGODB_URI', 'JWT_SECRET', 'STRIPE_SECRET_KEY'];
+const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+
+if (missingVars.length > 0) {
+  console.error('❌ Missing required environment variables:', missingVars.join(', '));
+  console.error('Please check your environment configuration.');
+  process.exit(1);
+}
+
+console.log('✅ All required environment variables are set');
+console.log('Environment:', process.env.NODE_ENV || 'development');
+
 const app = express();
+
+// Configurar trust proxy para Render
+app.set('trust proxy', 1);
+
 const server = http.createServer(app);
 const io = new Server(server, { 
   cors: { 
@@ -51,8 +69,8 @@ console.log('Serving static files from:', frontendPath);
 app.use(express.static(frontendPath));
 
 // Paso 2: Conectar a MongoDB Atlas
-// Usa process.env.MONGO_URI, maneja errores de conexión
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+// Usa process.env.MONGODB_URI, maneja errores de conexión
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB connection error:', err));
 
