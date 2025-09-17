@@ -32,11 +32,21 @@ const io = new Server(server, {
 // Middleware: JSON parsing, CORS, rate limiting (100 requests por 15 min)
 app.use(express.json());
 app.use(cors({ 
-  origin: ["http://localhost:3000", "http://localhost:8080", "http://127.0.0.1:3000", "http://127.0.0.1:8080"],
+  origin: [
+    "http://localhost:3000", 
+    "http://localhost:8080", 
+    "http://127.0.0.1:3000", 
+    "http://127.0.0.1:8080",
+    process.env.FRONTEND_URL
+  ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
+
+// Servir archivos estáticos del frontend (React build)
+const path = require('path');
+app.use(express.static(path.join(__dirname, 'FreelanceConfía/confia-talento-latam-main/dist')));
 
 // Paso 2: Conectar a MongoDB Atlas
 // Usa process.env.MONGO_URI, maneja errores de conexión
@@ -779,6 +789,11 @@ app.get('/api/health', (req, res) => {
     message: 'FreelanceConfía API is running',
     timestamp: new Date().toISOString()
   });
+});
+
+// Servir el frontend para todas las rutas que no sean API
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'FreelanceConfía/confia-talento-latam-main/dist/index.html'));
 });
 
 // Paso 13: Iniciar servidor
