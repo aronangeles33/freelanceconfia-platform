@@ -1,8 +1,7 @@
-import { defineConfig, loadEnv } from "vite";
+import { defineConfig, loadEnv, splitVendorChunkPlugin } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
-import { splitVendorChunkPlugin } from 'vite';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -54,75 +53,12 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         external: [],
         output: {
-          // Enhanced manual chunk splitting for optimal caching
-          manualChunks: (id) => {
-            // Vendor chunks
-            if (id.includes('node_modules')) {
-              // React ecosystem
-              if (id.includes('react') || id.includes('react-dom')) {
-                return 'react-vendor';
-              }
-              
-              // Router
-              if (id.includes('react-router')) {
-                return 'router-vendor';
-              }
-              
-              // UI libraries
-              if (id.includes('@radix-ui') || id.includes('lucide-react')) {
-                return 'ui-vendor';
-              }
-              
-              // Query and state management
-              if (id.includes('@tanstack/react-query') || id.includes('zustand')) {
-                return 'query-vendor';
-              }
-              
-              // Charts and visualization
-              if (id.includes('recharts') || id.includes('d3')) {
-                return 'chart-vendor';
-              }
-              
-              // Utilities
-              if (id.includes('clsx') || id.includes('tailwind-merge') || 
-                  id.includes('class-variance-authority') || id.includes('date-fns')) {
-                return 'utils-vendor';
-              }
-              
-              // Performance monitoring
-              if (id.includes('web-vitals') || id.includes('@sentry')) {
-                return 'monitoring-vendor';
-              }
-              
-              // Large libraries
-              if (id.includes('monaco-editor') || id.includes('pdf-lib')) {
-                return 'heavy-vendor';
-              }
-              
-              // Everything else goes to vendor
-              return 'vendor';
-            }
-            
-            // App chunks
-            if (id.includes('/src/pages/')) {
-              return 'pages';
-            }
-            
-            if (id.includes('/src/components/ui/')) {
-              return 'ui-components';
-            }
-            
-            if (id.includes('/src/components/')) {
-              return 'components';
-            }
-            
-            if (id.includes('/src/hooks/')) {
-              return 'hooks';
-            }
-            
-            if (id.includes('/src/config/')) {
-              return 'config';
-            }
+          // Simple manual chunk splitting
+          manualChunks: {
+            'react-vendor': ['react', 'react-dom'],
+            'ui-vendor': ['@radix-ui/react-slot', 'lucide-react'],
+            'utils-vendor': ['clsx', 'tailwind-merge', 'class-variance-authority'],
+            'vendor': ['@tanstack/react-query', 'react-router-dom']
           },
           
           // Optimized chunk naming for caching
@@ -156,28 +92,13 @@ export default defineConfig(({ mode }) => {
         }
       },
       
-      // Enhanced Terser options for production
+      // Simplified Terser options for production
       terserOptions: isProduction ? {
         compress: {
           drop_console: true,
-          drop_debugger: true,
-          pure_funcs: ['console.log', 'console.info', 'console.debug'],
-          passes: 2,
-          unsafe_arrows: true,
-          unsafe_comps: true,
-          unsafe_math: true,
-          unsafe_methods: true
+          drop_debugger: true
         },
-        mangle: {
-          safari10: true,
-          properties: {
-            regex: /^_/
-          }
-        },
-        format: {
-          comments: false,
-          safari10: true
-        }
+        mangle: true
       } : {},
       
       // Asset handling
