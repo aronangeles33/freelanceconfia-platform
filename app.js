@@ -21,6 +21,24 @@ const rateLimit = require('express-rate-limit');
 
 dotenv.config();
 
+// Debug: Mostrar variables de entorno (sin mostrar valores sensibles completos)
+console.log('🔍 Environment Variables Debug:');
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('PORT:', process.env.PORT);
+console.log('MONGODB_URI exists:', !!process.env.MONGODB_URI);
+console.log('JWT_SECRET exists:', !!process.env.JWT_SECRET);
+console.log('STRIPE_SECRET_KEY exists:', !!process.env.STRIPE_SECRET_KEY);
+console.log('FRONTEND_URL:', process.env.FRONTEND_URL);
+
+// Si MONGODB_URI es undefined, mostrar error específico
+if (!process.env.MONGODB_URI) {
+  console.error('❌ CRITICAL: MONGODB_URI is undefined');
+  console.error('Available environment variables:');
+  Object.keys(process.env).filter(key => key.startsWith('MONGO')).forEach(key => {
+    console.error(`  ${key}: ${!!process.env[key]}`);
+  });
+}
+
 // Validar variables de entorno requeridas
 const requiredEnvVars = ['MONGODB_URI', 'JWT_SECRET', 'STRIPE_SECRET_KEY'];
 const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
@@ -70,9 +88,16 @@ app.use(express.static(frontendPath));
 
 // Paso 2: Conectar a MongoDB Atlas
 // Usa process.env.MONGODB_URI, maneja errores de conexión
+console.log('🔗 Attempting to connect to MongoDB...');
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => console.error('MongoDB connection error:', err));
+  .then(() => {
+    console.log('✅ MongoDB connected successfully');
+  })
+  .catch(err => {
+    console.error('❌ MongoDB connection error:', err.message);
+    console.error('Server will continue running but database operations will fail');
+    // No hacer process.exit() para que el servidor siga corriendo y podamos hacer debug
+  });
 
 // Paso 3: Definir Modelos de Mongoose
 // Modelo User (para freelancers y empresas)
