@@ -13,6 +13,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const http = require('http');
+const path = require('path');
 const { Server } = require('socket.io');
 const dotenv = require('dotenv');
 const stripe = require('stripe');
@@ -45,8 +46,9 @@ app.use(cors({
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 
 // Servir archivos estáticos del frontend (React build)
-const path = require('path');
-app.use(express.static(path.join(__dirname, 'FreelanceConfía/confia-talento-latam-main/dist')));
+const frontendPath = path.join(__dirname, 'FreelanceConfía', 'confia-talento-latam-main', 'dist');
+console.log('Serving static files from:', frontendPath);
+app.use(express.static(frontendPath));
 
 // Paso 2: Conectar a MongoDB Atlas
 // Usa process.env.MONGO_URI, maneja errores de conexión
@@ -793,7 +795,9 @@ app.get('/api/health', (req, res) => {
 
 // Servir el frontend para todas las rutas que no sean API
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'FreelanceConfía/confia-talento-latam-main/dist/index.html'));
+  const indexPath = path.join(__dirname, 'FreelanceConfía', 'confia-talento-latam-main', 'dist', 'index.html');
+  console.log('Serving index.html from:', indexPath);
+  res.sendFile(indexPath);
 });
 
 // Paso 13: Iniciar servidor
