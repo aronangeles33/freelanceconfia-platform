@@ -1,7 +1,6 @@
-const { defineConfig } = require('vite');
 const { resolve } = require('path');
 
-module.exports = defineConfig({
+module.exports = {
   resolve: {
     alias: {
       "@": resolve(__dirname, "./src"),
@@ -17,4 +16,4 @@ module.exports = defineConfig({
     outDir: 'dist',
     emptyOutDir: true
   }
-});
+};

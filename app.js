@@ -95,8 +95,20 @@ app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 
 // Servir archivos estáticos del frontend (React build)
 const frontendPath = path.join(__dirname, 'FreelanceConfía', 'confia-talento-latam-main', 'dist');
-console.log('Serving static files from:', frontendPath);
-app.use(express.static(frontendPath));
+console.log('Checking frontend path:', frontendPath);
+
+// Verificar si el directorio dist existe antes de servir archivos estáticos
+const fs = require('fs');
+if (fs.existsSync(frontendPath)) {
+  console.log('✅ Frontend dist directory found, serving static files');
+  app.use(express.static(frontendPath));
+} else {
+  console.log('⚠️ Frontend dist directory not found, static files will not be served yet');
+  // Crear endpoint temporal para desarrollo
+  app.get('/', (req, res) => {
+    res.json({ message: 'FreelanceConfía Backend Running - Frontend build in progress' });
+  });
+}
 
 // Paso 2: Conectar a MongoDB Atlas
 // Usa process.env.MONGODB_URI, maneja errores de conexión
